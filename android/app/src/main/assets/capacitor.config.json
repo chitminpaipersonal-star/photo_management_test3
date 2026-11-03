@@ -1,0 +1,14 @@
+{
+	"appId": "com.datamanagement.archive",
+	"appName": "Data Management",
+	"webDir": "dist",
+	"android": {
+		"backgroundColor": "#F2F0EA",
+		"allowMixedContent": false
+	},
+	"plugins": {
+		"SystemBars": {
+			"insetsHandling": "disable"
+		}
+	}
+}

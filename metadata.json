@@ -1,0 +1,6 @@
+{
+  "name": "Data Management",
+  "description": "စာအုပ်ဓာတ်ပုံများကို ဖိုင်တွဲအလိုက် စနစ်တကျ စုစည်းသိမ်းဆည်းခြင်း၊ ကြည့်ရှုခြင်း၊ ZIP ဒေါင်းလုဒ်နှင့် မျှဝေခြင်းများ ပြုလုပ်နိုင်သော Editorial ဒီဇိုင်း အက်ပ်လီကေးရှင်း။",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

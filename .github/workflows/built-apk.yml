@@ -1,1 +1,74 @@
+name: Build Android APK
 
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            npm install --legacy-peer-deps
+          elif [ -f "android/package.json" ]; then
+            cd android && npm install --legacy-peer-deps
+          fi
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Auto Accept SDK Licenses
+        run: |
+          mkdir -p $ANDROID_HOME/licenses
+          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb7434029502224e8d80\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n84831b9409646a918e30573bab4c9c91346d8abd\n504667f4c241d8c1f757b86af09d7f6c17439d40\n621085764034346bb68c4d29fe341e0506aa9f4c" > $ANDROID_HOME/licenses/android-sdk-license
+          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd\n504667f4c241d8c1f757b86af09d7f6c17439d40" > $ANDROID_HOME/licenses/android-googletv-license
+          echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_HOME/licenses/android-sdk-preview-license
+
+      - name: Sync Capacitor Android
+        run: |
+          if npx cap --version >/dev/null 2>&1; then
+            npx cap sync android
+          fi
+
+      - name: Make Gradle Executable
+        run: |
+          if [ -f "gradlew" ]; then
+            chmod +x gradlew
+          elif [ -f "android/gradlew" ]; then
+            chmod +x android/gradlew
+          fi
+
+      - name: Build APK with Gradle
+        run: |
+          if [ -f "gradlew" ]; then
+            ./gradlew assembleDebug
+          elif [ -f "android/gradlew" ]; then
+            cd android && ./gradlew assembleDebug
+          else
+            echo "Gradlew not found!" && exit 1
+          fi
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-android-app
+          path: |
+            **/build/outputs/apk/debug/*.apk
+            
